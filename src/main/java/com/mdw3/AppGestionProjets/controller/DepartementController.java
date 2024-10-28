@@ -4,6 +4,7 @@ import com.mdw3.AppGestionProjets.entities.Projet;
 import com.mdw3.AppGestionProjets.repositories.ProjetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.mdw3.AppGestionProjets.entities.Departement;
@@ -11,7 +12,7 @@ import com.mdw3.AppGestionProjets.repositories.DepartementRepository;
 
 import java.util.List;
 import java.util.Optional;
-
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/departements")
 public class DepartementController {
@@ -21,7 +22,9 @@ public class DepartementController {
     private ProjetRepository projetRepository;
     //////////////////////////   1   //////////////////
     // Create a new Departement
+
     @PostMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Departement createDepartement(@RequestBody Departement departement) {
         // Vérifier que l'objet Departement n'est pas null
         if (departement == null) {
@@ -43,6 +46,7 @@ public class DepartementController {
     } //Fin
     //////////////////////////   2   //////////////////
     @GetMapping
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_RESPONSABLE')")
     public List<Departement> getAllDepartements() {
         List<Departement> departements = departementRepository.findAll();
 
@@ -54,6 +58,7 @@ public class DepartementController {
     }//Fin
     //////////////////////////   3   //////////////////
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Departement getDepartementById(@PathVariable Long id) {
         // Trouver le département par ID
         Optional<Departement> departement = departementRepository.findById(id);
@@ -66,7 +71,8 @@ public class DepartementController {
     }//FIn
     //////////////////////////   4   //////////////////
     @DeleteMapping("/{id}")
-    public String deleteDepartement(@PathVariable Long id) {
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public void deleteDepartement(@PathVariable Long id) {
         // Vérifier si le département existe
         Optional<Departement> departement = departementRepository.findById(id);
         if (departement.isEmpty()) {
@@ -78,7 +84,7 @@ public class DepartementController {
         if (departement.get().getProjets().isEmpty()) {
             departementRepository.deleteById(id);
             // Retourner un message de succès
-            return "Département supprimé avec succès";
+            //return "Département supprimé avec succès";
         }
         else {
             // Lancer une exception si le département n'existe pas
@@ -87,6 +93,7 @@ public class DepartementController {
     }//Fin
     //////////////////////////   5   //////////////////
     @PutMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Departement updateDepartement(@RequestBody Departement upDepartement) {
         // Trouver le département existant par ID
         Departement existingDepartement = departementRepository.findById(upDepartement.getId())
@@ -94,7 +101,10 @@ public class DepartementController {
         // Vérifier si le nom proposé existe déjà pour un autre département
         Optional<Departement> departement = departementRepository.findByNom(upDepartement.getNom());
         if (departement.isPresent() && (!departement.get().getId().equals(upDepartement.getId())))
-                throw new RuntimeException("Un département avec ce nom existe déjà");
+            throw new RuntimeException("Un département avec ce nom existe déjà");
+        if (upDepartement.getNom() == null || upDepartement.getNom().trim().isEmpty()) {
+            throw new RuntimeException("Le nom du département est obligatoire");
+        }
         // Mettre à jour les informations du département
         existingDepartement.setNom(upDepartement.getNom());
         // Sauvegarder le département mis à jour
@@ -102,6 +112,7 @@ public class DepartementController {
     }//Fin
     //////////////////////////   6   //////////////////
     @GetMapping("/{id}/projets")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_RESPONSABLE')")
     public List<Projet> getProjetsByDepartementId(@PathVariable Long id) {
         // Cherche le département par son ID
         Departement departement = departementRepository.findById(id)
@@ -116,6 +127,7 @@ public class DepartementController {
     }//Fin
     //////////////////////////   7   //////////////////
     @GetMapping("/recherche")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_RESPONSABLE')")
     public List<Departement> searchDepartements(@RequestParam String keyword) {
         List<Departement> resultats = departementRepository.findByNomContainingIgnoreCase(keyword);
         if (resultats.isEmpty()) {
