@@ -31,10 +31,7 @@ public class UserController {
                     userDetails.getAuthorities()
             );
         }
-
-        // Si l'utilisateur n'est pas authentifié, vous pouvez retourner null ou gérer cela autrement
+        // Si l'utilisateur n'est pas authentifié, on retourne null
         return null;
     }
-
-
 }

@@ -58,7 +58,7 @@ public class DepartementController {
     }//Fin
     //////////////////////////   3   //////////////////
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_RESPONSABLE')")
     public Departement getDepartementById(@PathVariable Long id) {
         // Trouver le département par ID
         Optional<Departement> departement = departementRepository.findById(id);
