@@ -48,12 +48,17 @@ public class UserController {
             // Si les informations d'identification sont incorrectes, lancer une exception
             throw new RuntimeException("Bad credentials");
         }
+<<<<<<< HEAD
 
         // Charger les détails de l'utilisateur
         UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getUsername());
 
         // Générer le token JWT
         return jwtUtil.generateToken(userDetails);
+=======
+        // Si l'utilisateur n'est pas authentifié, on retourne null
+        return null;
+>>>>>>> 7a090a65653375c1067fb3c8366916497dc7b21a
     }
 }
 
