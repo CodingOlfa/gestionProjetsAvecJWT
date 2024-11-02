@@ -35,7 +35,7 @@ public class MyUserDetails implements UserDetails {
         return true; // Modifier selon votre logique métier
     }
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public Collection<GrantedAuthority> getAuthorities() {
         // Récupérer la chaîne de rôles et la diviser par les virgules
         String[] roles = user.getRole().split(",");
         // Utiliser une liste pour stocker les authorities

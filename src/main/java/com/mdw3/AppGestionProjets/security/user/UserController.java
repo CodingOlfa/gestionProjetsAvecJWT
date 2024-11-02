@@ -41,19 +41,13 @@ public class UserController {
     @PostMapping("/login")
     public String login(@RequestBody AuthRequest authRequest) throws Exception {
         try {
-            // Authentifier l'utilisateur
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
-        } catch (BadCredentialsException e) {
-            // Si les informations d'identification sont incorrectes, lancer une exception
+        } catch (Exception e) {
             throw new RuntimeException("Bad credentials");
         }
-
-        // Charger les détails de l'utilisateur
-        UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getUsername());
-
-        // Générer le token JWT
-        return jwtUtil.generateToken(userDetails);
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getUsername());
+        return jwtUtil.generateToken(userDetails); // Retourne directement le token
     }
 }
 
