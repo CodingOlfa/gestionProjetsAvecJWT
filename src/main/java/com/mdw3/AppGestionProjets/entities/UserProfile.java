@@ -7,9 +7,9 @@ import java.util.Collection;
 @Data
 public class UserProfile {
     private String username;
-    private Collection<? extends GrantedAuthority> authorities;
+    private Collection<GrantedAuthority> authorities;
 
-    public UserProfile(String username, Collection<? extends GrantedAuthority> authorities) {
+    public UserProfile(String username, Collection<GrantedAuthority> authorities) {
         this.username = username;
         this.authorities = authorities;
     }
